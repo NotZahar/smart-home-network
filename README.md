@@ -1,34 +1,54 @@
 # smart-home-network
 
-Network version of the smart home example.
+Сетевая версия умного дома
 
-## Binaries
+Проект содержит:
 
-Run the TCP socket simulator:
+- умную розетку, которая синхронно общается с удалённым устройством по TCP
+- имитатор умной розетки с неблокирующим TCP-сервером и поддержкой нескольких клиентов
+- умный термометр, который получает температуру UDP-пакетами в отдельном потоке
+- имитатор термометра, который периодически отправляет UDP-пакеты
+- пример умного дома с сетевыми розетками и термометрами
+
+## Запуск через скрипты
+
+Собрать проект:
 
 ```bash
-cargo run --bin socket-simulator -- 127.0.0.1:4000
+./build-app.sh -k
 ```
 
-Run the UDP thermometer simulator with a config file:
+Запустить пример с автоматически поднятыми имитаторами:
+
+```bash
+./run-app.sh -- --start-simulators
+```
+
+Запустить пример без имитаторов:
+
+```bash
+./run-app.sh
+```
+
+В этом режиме пример пытается подключиться к уже запущенным устройствам. Если устройств нет, он выводит ошибку получения данных
+
+## Отдельные имитаторы
+
+Имитатор TCP-розетки принимает адрес из аргументов:
+
+```bash
+./run-app.sh --bin socket-simulator -- 127.0.0.1:4000
+```
+
+Имитатор UDP-термометра читает адрес и период отправки из файла:
 
 ```text
 target_addr = 127.0.0.1:4001
 period_ms = 500
 ```
 
-```bash
-cargo run --bin thermometer-simulator -- thermometer.conf
-```
-
-Run the smart home example against already started simulators:
+Запуск:
 
 ```bash
-cargo run --bin smart-home-network
-```
-
-For a self-contained demo:
-
-```bash
-cargo run --bin smart-home-network -- --start-simulators
+./run-app.sh --bin thermometer-simulator -- thermometer.conf
 ```
