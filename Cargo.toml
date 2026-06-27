@@ -1,0 +1,22 @@
+[package]
+name = "smart-home-network"
+version = "0.1.0"
+edition = "2024"
+
+[lib]
+name = "sh"
+path = "src/lib.rs"
+
+[[bin]]
+name = "smart-home-network"
+path = "src/bin/main.rs"
+
+[[bin]]
+name = "socket-simulator"
+path = "src/bin/socket_simulator.rs"
+
+[[bin]]
+name = "thermometer-simulator"
+path = "src/bin/thermometer_simulator.rs"
+
+[dependencies]
