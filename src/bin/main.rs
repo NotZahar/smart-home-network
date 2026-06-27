@@ -55,7 +55,7 @@ fn run() -> Result<(), Box<dyn Error>> {
         println!("Error: failed to control socket: {error}");
     }
 
-    let _ = thermometer.wait_for_temperature(Duration::from_millis(500));
+    let _ = thermometer.wait_for_temperature(temperature_wait_timeout());
 
     let room = make_room!(
         "network_socket" => socket,
@@ -86,6 +86,16 @@ fn configured_addr(env_name: &str, start_simulators: bool, default_addr: &str) -
             default_addr.to_string()
         }
     })
+}
+
+fn temperature_wait_timeout() -> Duration {
+    let wait_ms = std::env::var("SMART_HOME_TEMPERATURE_WAIT_MS")
+        .ok()
+        .and_then(|value| value.parse::<u64>().ok())
+        .filter(|value| *value > 0)
+        .unwrap_or(2_000);
+
+    Duration::from_millis(wait_ms)
 }
 
 struct SimulatorThread {

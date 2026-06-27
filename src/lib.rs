@@ -18,4 +18,6 @@ pub mod room;
 pub mod simulators;
 pub mod smart_device;
 
+mod utils;
+
 pub type DeviceResult<T> = Result<T, error::DeviceError>;

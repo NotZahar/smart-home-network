@@ -6,6 +6,7 @@ use std::time::Duration;
 
 use crate::DeviceResult;
 use crate::error::DeviceError;
+use crate::utils::random::{RandomGenerator, SimpleRandomGenerator};
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct ThermometerSimulatorConfig {
@@ -80,7 +81,7 @@ pub struct ThermometerSimulator {
     socket: UdpSocket,
     target_addr: String,
     period: Duration,
-    next_temperature: f32,
+    random_temperature_generator: SimpleRandomGenerator<f32>,
 }
 
 impl ThermometerSimulator {
@@ -95,7 +96,7 @@ impl ThermometerSimulator {
             socket,
             target_addr: target_addr.into(),
             period,
-            next_temperature: 20.0,
+            random_temperature_generator: SimpleRandomGenerator::new(),
         })
     }
 
@@ -124,17 +125,16 @@ impl ThermometerSimulator {
     }
 
     fn send_temperature(&mut self) -> DeviceResult<()> {
-        let packet = format!("{:.2}\n", self.next_temperature);
-        self.next_temperature += 0.5;
-
-        if self.next_temperature > 30.0 {
-            self.next_temperature = 20.0;
-        }
+        let packet = format!("{:.2}\n", self.next_temperature());
 
         match self.socket.send_to(packet.as_bytes(), &self.target_addr) {
             Ok(_) => Ok(()),
             Err(error) if error.kind() == std::io::ErrorKind::WouldBlock => Ok(()),
             Err(error) => Err(DeviceError::io("send UDP temperature", error)),
         }
+    }
+
+    fn next_temperature(&mut self) -> f32 {
+        self.random_temperature_generator.generate(20.0, 30.0)
     }
 }

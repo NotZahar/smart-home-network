@@ -20,3 +20,5 @@ name = "thermometer-simulator"
 path = "src/bin/thermometer_simulator.rs"
 
 [dependencies]
+num-traits = "0.2"
+rand = "0.10"
